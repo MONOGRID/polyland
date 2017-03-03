@@ -1,0 +1,8 @@
+- velocità dipendente dal ritmo (calcolare bpm in real-time)
+- muovere le shape in modo dinamico e indipendente
+x muovere la camera in modo che sembra si stia volando
+x ogni shape deve avere la sua forma
+x clickando sulla shape le altre si abbassano
+- allo space si gira a 360°
+- applicare texture alle shape riprendendo lo stile di mike gao
+- migliorare interazione al click per mutare la stem audio
