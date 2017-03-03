@@ -105,8 +105,6 @@ class App {
     this.createScene();
     this.addComposer();
     this.addObjects();
-
-    this.createParticles();
     this.initAudio();
 
     document.getElementById('start-btn').addEventListener('click', () => {
@@ -115,6 +113,9 @@ class App {
 
       let components = this.audioComponents;
 
+      this.createParticles();
+      this.createTerrain();
+    
       for (let i = 0; i < components.length; i++) {
         let current = components[i];
         
@@ -200,7 +201,10 @@ class App {
 
     this.scene = new THREE.Scene();
     this.scene.fog = new THREE.Fog(0x000000, 0, 1600);
+  }
 
+  createTerrain()
+  {
     let heightMap = new Image();
 
     heightMap.src = this.terrainsConfig.heightmapPath;
@@ -518,112 +522,115 @@ class App {
 
     this.renderer.clear();
 
-    this.camera.position.z += this.cameraBaseSpeed;
-    this.camera.position.y = 200 + Math.sin(el * 20) * 2
+    if (this.audioStarted) {
 
-    if (this.constellation) {
-      this.constellation.position.z = this.camera.position.z;
-    }
+      this.camera.position.z += this.cameraBaseSpeed;
+      this.camera.position.y = 200 + Math.sin(el * 20) * 2
 
-    if (this.terrains.length) {
-      for (let i = 0; i < this.terrains.length; i++) {
-        if (this.terrains[i].position.z + 1500 <= this.camera.position.z) {
-          this.terrains[i].position.z += 4096;
+      if (this.constellation) {
+        this.constellation.position.z = this.camera.position.z;
+      }
+
+      if (this.terrains.length) {
+        for (let i = 0; i < this.terrains.length; i++) {
+          if (this.terrains[i].position.z + 1500 <= this.camera.position.z) {
+            this.terrains[i].position.z += 4096;
+          }
         }
       }
-    }
 
-    if (this.camera.position.z % 200 == 0 || !this.particlesSpawned) {
-      this.createParticles(this.particlesSpawned);
+      if (this.camera.position.z % 200 == 0 || !this.particlesSpawned) {
+        this.createParticles(this.particlesSpawned);
 
-      this.particlesSpawned = true;
-    }
+        this.particlesSpawned = true;
+      }
 
-    if (this.loadedAudioTracks == this.totalAudioTracks && this.audioStarted) {
+      if (this.loadedAudioTracks == this.totalAudioTracks && this.audioStarted) {
 
-      if (this.constellation && !this.paused) {
-        let waveform = this.soundSources.vocals.analyser.waveform();
+        if (this.constellation && !this.paused) {
+          let waveform = this.soundSources.vocals.analyser.waveform();
 
-        var waveIndex = 0;
+          var waveIndex = 0;
 
-        for (let i = 0; i < 32; i++) {
-          for (let j = 0; j < 32; j++) {
+          for (let i = 0; i < 32; i++) {
+            for (let j = 0; j < 32; j++) {
 
-            let x = -150 + (i * 10) + (Math.random() * 4 - 4);
-            let y = waveform[waveIndex] / 4 + 230;
-            let z = 90 + (j * 10) + (Math.random() * 4 - 4);
+              let x = -150 + (i * 10) + (Math.random() * 4 - 4);
+              let y = waveform[waveIndex] / 4 + 230;
+              let z = 90 + (j * 10) + (Math.random() * 4 - 4);
 
-            TweenMax.to(this.constellation.geometry.vertices[waveIndex], .2, {
-              x: x,
-              y: y,
-              z: z,
-              ease: Power2.easeOut
+              TweenMax.to(this.constellation.geometry.vertices[waveIndex], .2, {
+                x: x,
+                y: y,
+                z: z,
+                ease: Power2.easeOut
+              });
+
+              waveIndex += 1;
+            }
+          }
+
+          this.constellation.geometry.verticesNeedUpdate = true;
+        }
+
+        let bassFreq   = this.getAverageValue(this.soundSources.bass);
+        let melodyFreq = this.getAverageValue(this.soundSources.melody);
+        let vocalsFreq = this.getAverageValue(this.soundSources.vocals);
+
+        let components = this.audioComponents;
+
+        for (let i = 0; i < 3; i++) {
+          let current = components[i];
+
+          if (this.soundSources[current].volume < 0.9 && !this.shapes[current].inactive) {
+            this.soundSources[current].volume += 0.01;
+          }
+
+          this.shapes[current].rotation.x += 0.01;
+          this.shapes[current].rotation.y += 0.01;
+          this.shapes[current].rotation.z += 0.01;
+
+          this.shapes[current].position.z = this.camera.position.z + 20 + i;
+
+          if (!this.shapes[current].inactive) {
+
+            this.shapes[current].lightEmitter.position.z = this.shapes[current].position.z;
+            this.shapes[current].lightEmitter.position.y = this.camera.position.y;
+
+            this.lightTargetOnTerrain[current].position.z = this.camera.position.z + 300;
+
+            TweenMax.to(this.shapes[current].position, 0.9, {
+              x: -(this.mouse.x * 5) + this.soundShapeConfig[current].order * 10 - 10,
+              y: -(this.mouse.y * 5) + 200,
+              ease: Power2.easeOut,
+              delay: this.soundShapeConfig[current].order / 6
             });
-
-            waveIndex += 1;
           }
         }
 
-        this.constellation.geometry.verticesNeedUpdate = true;
-      }
-
-      let bassFreq   = this.getAverageValue(this.soundSources.bass);
-      let melodyFreq = this.getAverageValue(this.soundSources.melody);
-      let vocalsFreq = this.getAverageValue(this.soundSources.vocals);
-
-      let components = this.audioComponents;
-
-      for (let i = 0; i < 3; i++) {
-        let current = components[i];
-
-        if (this.soundSources[current].volume < 0.9 && !this.shapes[current].inactive) {
-          this.soundSources[current].volume += 0.01;
-        }
-
-        this.shapes[current].rotation.x += 0.01;
-        this.shapes[current].rotation.y += 0.01;
-        this.shapes[current].rotation.z += 0.01;
-
-        this.shapes[current].position.z = this.camera.position.z + 20 + i;
-
-        if (!this.shapes[current].inactive) {
-
-          this.shapes[current].lightEmitter.position.z = this.shapes[current].position.z;
-          this.shapes[current].lightEmitter.position.y = this.camera.position.y;
-
-          this.lightTargetOnTerrain[current].position.z = this.camera.position.z + 300;
-
-          TweenMax.to(this.shapes[current].position, 0.9, {
-            x: -(this.mouse.x * 5) + this.soundShapeConfig[current].order * 10 - 10,
-            y: -(this.mouse.y * 5) + 200,
-            ease: Power2.easeOut,
-            delay: this.soundShapeConfig[current].order / 6
+        if (!this.shapes.bass.inactive) {
+          TweenMax.to(this.shapes.bass.scale, 0.4, {
+            x: bassFreq,
+            y: bassFreq,
+            z: bassFreq
           });
         }
-      }
 
-      if (!this.shapes.bass.inactive) {
-        TweenMax.to(this.shapes.bass.scale, 0.4, {
-          x: bassFreq,
-          y: bassFreq,
-          z: bassFreq
-        });
-      }
+        if (!this.shapes.melody.inactive) {
+          TweenMax.to(this.shapes.melody.scale, 0.4, {
+            x: melodyFreq,
+            y: melodyFreq,
+            z: melodyFreq
+          });
+        }
 
-      if (!this.shapes.melody.inactive) {
-        TweenMax.to(this.shapes.melody.scale, 0.4, {
-          x: melodyFreq,
-          y: melodyFreq,
-          z: melodyFreq
-        });
-      }
-
-      if (!this.shapes.vocals.inactive) {
-        TweenMax.to(this.shapes.vocals.scale, 0.4, {
-          x: vocalsFreq,
-          y: vocalsFreq,
-          z: vocalsFreq
-        });
+        if (!this.shapes.vocals.inactive) {
+          TweenMax.to(this.shapes.vocals.scale, 0.4, {
+            x: vocalsFreq,
+            y: vocalsFreq,
+            z: vocalsFreq
+          });
+        }
       }
     }
 
