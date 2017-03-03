@@ -119,6 +119,26 @@ class App {
     this.initAudio();
 
     document.getElementById('start-btn').addEventListener('click', () => {
+      if (this.audioStarted) {
+        this.paused = !this.paused;
+        
+        let components = this.audioComponents;
+
+        for (let i = 0; i < 3; i++) {
+          let current = components[i];
+
+          if (this.paused) {
+            document.getElementById('btn-container').className = 'play-button';
+            this.soundSources[current].pause();
+          } else {
+            document.getElementById('btn-container').className = 'play-button play-button-bottom';
+            this.soundSources[current].play();
+          }
+        }
+
+        return;
+      }
+
       let components = this.audioComponents;
 
       for (let i = 0; i < components.length; i++) {
@@ -133,7 +153,7 @@ class App {
         this.startTracks();
       }
       
-      document.getElementById('container-div').className += ' container-hidden';
+      document.getElementById('btn-container').className = 'play-button play-button-bottom';
     });
 
     this.onResize();
@@ -549,7 +569,7 @@ class App {
 
     if (this.loadedAudioTracks == this.totalAudioTracks && this.audioStarted) {
 
-      document.getElementById('start-btn').className = 'button';
+      //document.getElementById('start-btn').className = 'button';
 
       if (this.constellation && !this.paused) {
         let waveform = this.soundSources.vocals.analyser.waveform();
@@ -657,27 +677,23 @@ class App {
   }
 
   onKeyDown(e) {
-    if (vkey[e.keyCode] === '<space>') {
-      this.paused = !this.paused;
+    // if (vkey[e.keyCode] === '<space>') {
+    //   this.paused = !this.paused;
 
-      let components = this.audioComponents;
+    //   let components = this.audioComponents;
 
-      for (let i = 0; i < 3; i++) {
-        let current = components[i];
+    //   for (let i = 0; i < 3; i++) {
+    //     let current = components[i];
 
-        if (this.paused) {
-          document.getElementById('p1').className = 'indicator-pause paused';
-          this.soundSources[current].pause();
-        } else {
-          document.getElementById('p1').className = 'indicator-pause played';
-          this.soundSources[current].play();
-        }
-
-        setTimeout(() => {
-          document.getElementById('p1').className = 'indicator-pause';          
-        }, 1500);
-      }
-    }
+    //     if (this.paused) {
+    //       document.getElementById('btn-container').className = 'play-button';
+    //       this.soundSources[current].pause();
+    //     } else {
+    //       document.getElementById('btn-container').className = 'play-button play-button-bottom';
+    //       this.soundSources[current].play();
+    //     }
+    //   }
+    // }
   }
 
   onMouseDown(e) {

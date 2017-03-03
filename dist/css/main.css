@@ -30,6 +30,20 @@ html, body {
   -ms-transition: opacity .3s ease-out;
 }
 
+.play-button {
+  width: 40px;
+  height: 40px;
+
+  position: absolute;
+
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  margin: auto;
+}
+
 .container.container-hidden {
   opacity: 0;
 
@@ -159,13 +173,11 @@ h3 {
 }
 
 .button {
-  margin-top: 20px;
-  border: 2px solid #FFF;
-
   background-color: transparent;
-  padding: 5px 50px;
 
   outline: none;
+
+  width: 100%; height: auto;
 
   color: #FFF;
   font-family: 'Amatic SC', cursive;
@@ -174,10 +186,18 @@ h3 {
 
   opacity: 1;
 
+  cursor: pointer;
+
   transition: background-color .3s ease-out, color .3s ease-out, opacity .3s ease-out;
   -webkit-transition: background-color .3s ease-out, color .3s ease-out, opacity .3s ease-out;
   -moz-transition: background-color .3s ease-out, color .3s ease-out, opacity .3s ease-out;
   -ms-transition: background-color .3s ease-out, color .3s ease-out, opacity .3s ease-out;
+}
+
+
+.play-button.play-button-bottom {
+  bottom: 10px;
+  top: auto;
 }
 
 .button.button-locked {
@@ -186,7 +206,5 @@ h3 {
 
 .button:hover, 
 .button:focus {
-  background-color: #FFF;
-
   color: #000;
 }
