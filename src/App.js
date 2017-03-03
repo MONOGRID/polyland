@@ -129,10 +129,10 @@ class App {
       }
       
       document.getElementById('btn-container').className = 'play-button play-button-bottom';
+      this.onResize();
+      this.update();
     });
 
-    this.onResize();
-    this.update();
   }
 
   startStats()
