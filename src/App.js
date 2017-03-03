@@ -1,10 +1,3 @@
-/*
- *   Per fare post processing mettere tutto in gamma.glsl per fragment shader
- *   o in fxaa.glsl per vertex shader, fino ad ora ho messo a mano i chunk prendendo
- *   ciò che mi serviva da quelli di threejs (fxaa, film shader, gamma e vignette)
- *   
-*/
-
 import dat from 'dat-gui'
 import Stats from 'stats-js'
 import THREE from 'three'
@@ -108,36 +101,17 @@ class App {
       })
     };
 
-    //this.startStats();
     this.createRender();
     this.createScene();
     this.addComposer();
     this.addObjects();
 
     this.createParticles();
-    //this.startGUI();
     this.initAudio();
 
     document.getElementById('start-btn').addEventListener('click', () => {
-      if (this.audioStarted) {
-        this.paused = !this.paused;
-        
-        let components = this.audioComponents;
-
-        for (let i = 0; i < 3; i++) {
-          let current = components[i];
-
-          if (this.paused) {
-            document.getElementById('btn-container').className = 'play-button';
-            this.soundSources[current].pause();
-          } else {
-            document.getElementById('btn-container').className = 'play-button play-button-bottom';
-            this.soundSources[current].play();
-          }
-        }
-
+      if (this.audioStarted)
         return;
-      }
 
       let components = this.audioComponents;
 
@@ -539,8 +513,6 @@ class App {
 
   update()
   {
-    //this.stats.begin();
-
     let el = this.clock.getElapsedTime() * .05;
     let d = this.clock.getDelta();
 
@@ -568,8 +540,6 @@ class App {
     }
 
     if (this.loadedAudioTracks == this.totalAudioTracks && this.audioStarted) {
-
-      //document.getElementById('start-btn').className = 'button';
 
       if (this.constellation && !this.paused) {
         let waveform = this.soundSources.vocals.analyser.waveform();
@@ -613,10 +583,6 @@ class App {
         this.shapes[current].rotation.x += 0.01;
         this.shapes[current].rotation.y += 0.01;
         this.shapes[current].rotation.z += 0.01;
-
-        // if (this.shapes[current].transition)
-        //this.shapes[current].position.y = 200 //+ (Math.sin(el * 20 + i)) * 4;
-        // todo mouse follow targets
 
         this.shapes[current].position.z = this.camera.position.z + 20 + i;
 
@@ -663,7 +629,6 @@ class App {
 
     this.composer.render(d);
 
-    //this.stats.end()
     requestAnimationFrame(this.update.bind(this));
   }
 
@@ -674,26 +639,6 @@ class App {
   onMouseMove(e) {
     this.mouse.x = (e.clientX / this.renderer.domElement.clientWidth) * 2 - 1;
     this.mouse.y = -(e.clientY / this.renderer.domElement.clientHeight) * 2 + 1;
-  }
-
-  onKeyDown(e) {
-    // if (vkey[e.keyCode] === '<space>') {
-    //   this.paused = !this.paused;
-
-    //   let components = this.audioComponents;
-
-    //   for (let i = 0; i < 3; i++) {
-    //     let current = components[i];
-
-    //     if (this.paused) {
-    //       document.getElementById('btn-container').className = 'play-button';
-    //       this.soundSources[current].pause();
-    //     } else {
-    //       document.getElementById('btn-container').className = 'play-button play-button-bottom';
-    //       this.soundSources[current].play();
-    //     }
-    //   }
-    // }
   }
 
   onMouseDown(e) {

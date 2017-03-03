@@ -31,8 +31,8 @@ html, body {
 }
 
 .play-button {
-  width: 40px;
-  height: 40px;
+  width: 64px;
+  height: 64px;
 
   position: absolute;
 
@@ -42,6 +42,11 @@ html, body {
   bottom: 0;
 
   margin: auto;
+  
+  transition: opacity .3s ease-out;
+  -webkit-transition: opacity .3s ease-out;
+  -moz-transition: opacity .3s ease-out;
+  -ms-transition: opacity .3s ease-out;
 }
 
 .container.container-hidden {
@@ -196,8 +201,9 @@ h3 {
 
 
 .play-button.play-button-bottom {
-  bottom: 10px;
-  top: auto;
+  opacity: 0;
+
+  pointer-events: none;
 }
 
 .button.button-locked {
