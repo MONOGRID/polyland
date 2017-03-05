@@ -119,6 +119,8 @@ class App {
       for (let i = 0; i < components.length; i++) {
         let current = components[i];
         
+        this.soundSources[current].analyser = analyser(this.soundSources[current]);
+        
         this.createSoundShape(current);
 
         this.createConstellation(current);
@@ -306,8 +308,6 @@ class App {
       this.soundSources[current].addEventListener('canplay', () => {
         this.soundSources[current].loaded  = true;
         this.soundSources[current].volume  = 0.0;
-
-        this.soundSources[current].analyser = analyser(this.soundSources[current]);
 
         this.loadedAudioTracks += 1;
       });
